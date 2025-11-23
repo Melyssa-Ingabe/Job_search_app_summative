@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Search and discover job opportunities from multiple sources">
+    <title>Job Search Aggregator</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-briefcase"></i>
+                    <h1>JobFinder Pro</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-view="search">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <button class="nav-btn" data-view="bookmarks">
+                        <i class="fas fa-bookmark"></i> 
+                        Bookmarks 
+                        <span class="bookmark-count">0</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Search Section -->
+            <section id="search-view" class="view active">
+                <!-- Search Bar -->
+                <div class="search-section">
+                    <div class="search-bar">
+                        <div class="input-group">
+                            <i class="fas fa-search"></i>
+                            <input 
+                                type="text" 
+                                id="job-search" 
+                                placeholder="Job title, keywords, or company"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input 
+                                type="text" 
+                                id="location-search" 
+                                placeholder="City or state"
+                                autocomplete="off"
+                            >
+                        </div>
+                        <button class="btn btn-primary" id="search-btn">
+                            <i class="fas fa-search"></i> Search Jobs
+                        </button>
+                    </div>
+
+                    <!-- Filter Toggle -->
+                    <button class="filter-toggle" id="filter-toggle">
+                        <i class="fas fa-sliders-h"></i> Filters
+                        <span class="active-filters" style="display: none;">0</span>
+                    </button>
+                </div>
+
+                <!-- Filters Panel -->
+                <div class="filters-panel" id="filters-panel">
+                    <div class="filters-grid">
+                        <!-- Job Type Filter -->
+                        <div class="filter-group">
+                            <label class="filter-label">Job Type</label>
+                            <div class="checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="full_time" class="job-type-filter">
+                                    <span>Full-time</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="part_time" class="job-type-filter">
+                                    <span>Part-time</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="contract" class="job-type-filter">
+                                    <span>Contract</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" value="remote" class="job-type-filter">
+                                    <span>Remote</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Date Posted Filter -->
+                        <div class="filter-group">
+                            <label class="filter-label">Date Posted</label>
+                            <select class="filter-select" id="date-filter">
+                                <option value="">Any time</option>
+                                <option value="1">Last 24 hours</option>
+                                <option value="7">Last 7 days</option>
+                                <option value="30">Last 30 days</option>
+                            </select>
+                        </div>
+
+                        <!-- Salary Range Filter -->
+                        <div class="filter-group">
+                            <label class="filter-label">Minimum Salary</label>
+                            <select class="filter-select" id="salary-filter">
+                                <option value="">Any salary</option>
+                                <option value="30000">$30,000+</option>
+                                <option value="50000">$50,000+</option>
+                                <option value="75000">$75,000+</option>
+                                <option value="100000">$100,000+</option>
+                                <option value="150000">$150,000+</option>
+                            </select>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="filter-actions">
+                            <button class="btn btn-secondary" id="clear-filters">
+                                <i class="fas fa-times"></i> Clear All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section">
+                    <!-- Results Header -->
+                    <div class="results-header">
+                        <div class="results-info">
+                            <h2 id="results-title">Ready to search</h2>
+                            <p id="results-count" class="results-count"></p>
+                        </div>
+                        <div class="sort-options">
+                            <label for="sort-select">Sort by:</label>
+                            <select id="sort-select" class="filter-select">
+                                <option value="relevance">Relevance</option>
+                                <option value="date">Date Posted</option>
+                                <option value="salary">Salary (High to Low)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div class="loading" id="loading" style="display: none;">
+                        <div class="spinner"></div>
+                        <p>Searching for jobs...</p>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div class="error-message" id="error-message" style="display: none;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p id="error-text"></p>
+                        <button class="btn btn-secondary" id="retry-btn">Try Again</button>
+                    </div>
+
+                    <!-- No Results -->
+                    <div class="no-results" id="no-results" style="display: none;">
+                        <i class="fas fa-search"></i>
+                        <h3>No jobs found</h3>
+                        <p>Try adjusting your search criteria or filters</p>
+                    </div>
+
+                    <!-- Jobs List -->
+                    <div class="jobs-grid" id="jobs-list">
+                        <!-- Jobs will be inserted here by JavaScript -->
+                    </div>
+
+                    <!-- Load More Button -->
+                    <div class="load-more-container" id="load-more-container" style="display: none;">
+                        <button class="btn btn-secondary" id="load-more-btn">
+                            Load More Jobs
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bookmarks Section -->
+            <section id="bookmarks-view" class="view">
+                <div class="bookmarks-header">
+                    <h2><i class="fas fa-bookmark"></i> Saved Jobs</h2>
+                    <button class="btn btn-secondary" id="clear-bookmarks">
+                        <i class="fas fa-trash"></i> Clear All
+                    </button>
+                </div>
+
+                <!-- Bookmarks Empty State -->
+                <div class="empty-state" id="bookmarks-empty">
+                    <i class="fas fa-bookmark"></i>
+                    <h3>No saved jobs yet</h3>
+                    <p>Start searching and bookmark jobs you're interested in!</p>
+                </div>
+
+                <!-- Bookmarks List -->
+                <div class="jobs-grid" id="bookmarks-list">
+                    <!-- Bookmarked jobs will be inserted here -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 JobFinder Pro. Educational Project.</p>
+                <div class="footer-links">
+                    <span>Powered by:</span>
+                    <a href="https://developer.adzuna.com/" target="_blank">Adzuna API</a>
+                    <span>•</span>
+                    <a href="https://rapidapi.com/" target="_blank">RapidAPI</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Job Detail Modal -->
+    <div class="modal" id="job-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body" id="modal-body">
+                <!-- Job details will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+</body>
+</html>
