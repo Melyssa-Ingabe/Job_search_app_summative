@@ -1,6 +1,4 @@
-/* ============================================
-   CSS Reset and Base Styles
-   ============================================ */
+/* Styles */
 
 * {
   margin: 0;
@@ -9,30 +7,30 @@
 }
 
 :root {
-  /* Primary Colors */
+  /* Main colors */
   --primary-color: #4f46e5;
   --primary-hover: #4338ca;
   --primary-light: #eef2ff;
   
-  /* Secondary Colors */
+  /* Secondary colors */
   --secondary-color: #64748b;
   --secondary-hover: #475569;
   
-  /* Background Colors */
+  /* Background colors */
   --bg-primary: #ffffff;
   --bg-secondary: #f8fafc;
   --bg-tertiary: #f1f5f9;
   
-  /* Text Colors */
+  /* Text colors */
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --text-light: #94a3b8;
   
-  /* Border Colors */
+  /* Border colors */
   --border-color: #e2e8f0;
   --border-hover: #cbd5e1;
   
-  /* Status Colors */
+  /* Status colors */
   --success: #10b981;
   --warning: #f59e0b;
   --error: #ef4444;
@@ -44,7 +42,7 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
   
-  /* Border Radius */
+  /* Border radius */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
@@ -80,9 +78,7 @@ body {
   width: 100%;
 }
 
-/* ============================================
-   Header
-   ============================================ */
+/* Header */
 
 .header {
   background-color: var(--bg-primary);
@@ -160,9 +156,7 @@ body {
   text-align: center;
 }
 
-/* ============================================
-   Main Content
-   ============================================ */
+/* Main */
 
 .main {
   flex: 1;
@@ -183,9 +177,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================
-   Search Section
-   ============================================ */
+/* Search section */
 
 .search-section {
   background-color: var(--bg-primary);
@@ -304,9 +296,7 @@ body {
   text-align: center;
 }
 
-/* ============================================
-   Filters Panel
-   ============================================ */
+/* Filters */
 
 .filters-panel {
   display: none;
@@ -395,9 +385,7 @@ body {
   align-items: flex-end;
 }
 
-/* ============================================
-   Results Section
-   ============================================ */
+/* Results */
 
 .results-section {
   background-color: var(--bg-primary);
@@ -436,9 +424,7 @@ body {
   color: var(--text-secondary);
 }
 
-/* ============================================
-   Loading, Error, and Empty States
-   ============================================ */
+/* Loading, error, and more */
 
 .loading,
 .error-message,
@@ -502,9 +488,7 @@ body {
   margin-bottom: var(--spacing-lg);
 }
 
-/* ============================================
-   Jobs Grid
-   ============================================ */
+/* Jobs */
 
 .jobs-grid {
   display: grid;
@@ -644,9 +628,7 @@ body {
   color: white;
 }
 
-/* ============================================
-   Load More
-   ============================================ */
+/* Load More */
 
 .load-more-container {
   display: flex;
@@ -654,9 +636,7 @@ body {
   margin-top: var(--spacing-xl);
 }
 
-/* ============================================
-   Bookmarks Section
-   ============================================ */
+/* Bookmarks */
 
 .bookmarks-header {
   display: flex;
@@ -676,9 +656,7 @@ body {
   color: var(--text-primary);
 }
 
-/* ============================================
-   Modal
-   ============================================ */
+/* Modal */
 
 .modal {
   display: none;
@@ -745,9 +723,7 @@ body {
   padding: var(--spacing-xl);
 }
 
-/* ============================================
-   Footer
-   ============================================ */
+/* Footer */
 
 .footer {
   background-color: var(--bg-primary);
@@ -788,9 +764,7 @@ body {
   text-decoration: underline;
 }
 
-/* ============================================
-   Responsive Design
-   ============================================ */
+/* Responsive design */
 
 @media (max-width: 768px) {
   .search-bar {
