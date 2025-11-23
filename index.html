@@ -6,9 +6,9 @@
     <meta name="description" content="Search and discover job opportunities from multiple sources">
     <title>Job Search Aggregator</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Font Awesome for Icons -->
+    <!-- Font for my icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
+    <!-- Google fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -34,12 +34,12 @@
         </div>
     </header>
 
-    <!-- Main Content -->
+    <!-- Main content -->
     <main class="main">
         <div class="container">
-            <!-- Search Section -->
+            <!-- Search section -->
             <section id="search-view" class="view active">
-                <!-- Search Bar -->
+                <!-- Search bar -->
                 <div class="search-section">
                     <div class="search-bar">
                         <div class="input-group">
@@ -65,17 +65,17 @@
                         </button>
                     </div>
 
-                    <!-- Filter Toggle -->
+                    <!-- Filter toggle -->
                     <button class="filter-toggle" id="filter-toggle">
                         <i class="fas fa-sliders-h"></i> Filters
                         <span class="active-filters" style="display: none;">0</span>
                     </button>
                 </div>
 
-                <!-- Filters Panel -->
+                <!-- Filters panel -->
                 <div class="filters-panel" id="filters-panel">
                     <div class="filters-grid">
-                        <!-- Job Type Filter -->
+                        <!-- Job type filter -->
                         <div class="filter-group">
                             <label class="filter-label">Job Type</label>
                             <div class="checkbox-group">
@@ -98,7 +98,7 @@
                             </div>
                         </div>
 
-                        <!-- Date Posted Filter -->
+                        <!-- Date posted filter -->
                         <div class="filter-group">
                             <label class="filter-label">Date Posted</label>
                             <select class="filter-select" id="date-filter">
@@ -109,7 +109,7 @@
                             </select>
                         </div>
 
-                        <!-- Salary Range Filter -->
+                        <!-- Salary range filter -->
                         <div class="filter-group">
                             <label class="filter-label">Minimum Salary</label>
                             <select class="filter-select" id="salary-filter">
@@ -131,9 +131,9 @@
                     </div>
                 </div>
 
-                <!-- Results Section -->
+                <!-- Results section -->
                 <div class="results-section">
-                    <!-- Results Header -->
+                    <!-- Results header -->
                     <div class="results-header">
                         <div class="results-info">
                             <h2 id="results-title">Ready to search</h2>
@@ -149,32 +149,32 @@
                         </div>
                     </div>
 
-                    <!-- Loading Spinner -->
+                    <!-- Loading spinner -->
                     <div class="loading" id="loading" style="display: none;">
                         <div class="spinner"></div>
                         <p>Searching for jobs...</p>
                     </div>
 
-                    <!-- Error Message -->
+                    <!-- Error message -->
                     <div class="error-message" id="error-message" style="display: none;">
                         <i class="fas fa-exclamation-circle"></i>
                         <p id="error-text"></p>
                         <button class="btn btn-secondary" id="retry-btn">Try Again</button>
                     </div>
 
-                    <!-- No Results -->
+                    <!-- No results -->
                     <div class="no-results" id="no-results" style="display: none;">
                         <i class="fas fa-search"></i>
                         <h3>No jobs found</h3>
                         <p>Try adjusting your search criteria or filters</p>
                     </div>
 
-                    <!-- Jobs List -->
+                    <!-- Jobs list -->
                     <div class="jobs-grid" id="jobs-list">
                         <!-- Jobs will be inserted here by JavaScript -->
                     </div>
 
-                    <!-- Load More Button -->
+                    <!-- Load more button -->
                     <div class="load-more-container" id="load-more-container" style="display: none;">
                         <button class="btn btn-secondary" id="load-more-btn">
                             Load More Jobs
@@ -183,7 +183,7 @@
                 </div>
             </section>
 
-            <!-- Bookmarks Section -->
+            <!-- Bookmarks section -->
             <section id="bookmarks-view" class="view">
                 <div class="bookmarks-header">
                     <h2><i class="fas fa-bookmark"></i> Saved Jobs</h2>
@@ -192,14 +192,14 @@
                     </button>
                 </div>
 
-                <!-- Bookmarks Empty State -->
+                <!-- Bookmarks empty -->
                 <div class="empty-state" id="bookmarks-empty">
                     <i class="fas fa-bookmark"></i>
                     <h3>No saved jobs yet</h3>
                     <p>Start searching and bookmark jobs you're interested in!</p>
                 </div>
 
-                <!-- Bookmarks List -->
+                <!-- Bookmarks list -->
                 <div class="jobs-grid" id="bookmarks-list">
                     <!-- Bookmarked jobs will be inserted here -->
                 </div>
@@ -222,7 +222,7 @@
         </div>
     </footer>
 
-    <!-- Job Detail Modal -->
+    <!-- Job detail modal -->
     <div class="modal" id="job-modal">
         <div class="modal-content">
             <button class="modal-close" id="modal-close">

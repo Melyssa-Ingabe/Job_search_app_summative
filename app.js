@@ -1,6 +1,4 @@
-// ============================================
 // API Configuration
-// ============================================
 
 const API_CONFIG = {
   adzuna: {
@@ -14,9 +12,7 @@ const API_CONFIG = {
   }
 };
 
-// ============================================
-// Application State
-// ============================================
+// application state
 
 const state = {
   currentView: 'search',
@@ -40,9 +36,7 @@ const state = {
   }
 };
 
-// ============================================
-// DOM Elements
-// ============================================
+// Elements
 
 const elements = {
   // Navigation
@@ -91,11 +85,7 @@ const elements = {
   modalBody: document.getElementById('modal-body')
 };
 
-// ============================================
-// Utility Functions
-// ============================================
-
-// Format date to relative time
+// Format date to current time
 function formatDate(dateString) {
   const date = new Date(dateString);
   const now = new Date();
@@ -151,18 +141,17 @@ function isCacheValid() {
   return Date.now() - state.cache.timestamp < fiveMinutes;
 }
 
-// ============================================
 // API Functions
-// ============================================
 
-// Fetch jobs from Adzuna
-async function fetchAdzunaJobs(query, location = 'us', page = 1) {
+// jobs from Adzuna
+async function fetchAdzunaJobs(query, location = '', page = 1) {
   try {
-    const url = `${API_CONFIG.adzuna.baseUrl}/${location}/search/${page}?` +
+    const url = `${API_CONFIG.adzuna.baseUrl}/us/search/${page}?` +
       `app_id=${API_CONFIG.adzuna.appId}&` +
       `app_key=${API_CONFIG.adzuna.apiKey}&` +
-      `results_per_page=20&` +
-      `what=${encodeURIComponent(query)}`;
+      `results_per_page=50&` +
+      `what=${encodeURIComponent(query)}&` +
+      `where=${encodeURIComponent(location || '')}`;
     
     const response = await fetch(url);
     
@@ -171,8 +160,26 @@ async function fetchAdzunaJobs(query, location = 'us', page = 1) {
     }
     
     const data = await response.json();
+    let jobs = data.results || [];
     
-    return data.results.map(job => ({
+    // Apply strict location filtering if location is provided
+    if (location) {
+      jobs = jobs.filter(job => {
+        const jobLocation = (job.location?.display_name || '').toLowerCase();
+        const searchLocation = location.toLowerCase();
+        
+        // Split search location by comma (e.g., "New York, NY" -> ["new york", "ny"])
+        const searchParts = searchLocation.split(',').map(s => s.trim());
+        
+        // Check if job location contains any part of the search location
+        return searchParts.some(part => jobLocation.includes(part));
+      });
+      
+      // Limit to 20 results after filtering
+      jobs = jobs.slice(0, 20);
+    }
+    
+    return jobs.map(job => ({
       id: generateId(job.title, job.company.display_name),
       title: job.title,
       company: job.company.display_name,
@@ -183,7 +190,7 @@ async function fetchAdzunaJobs(query, location = 'us', page = 1) {
       contract_type: job.contract_type || 'Not specified',
       created: job.created,
       redirect_url: job.redirect_url,
-      category: job.category.label,
+      category: job.category?.label || 'General',
       source: 'Adzuna'
     }));
   } catch (error) {
@@ -192,12 +199,17 @@ async function fetchAdzunaJobs(query, location = 'us', page = 1) {
   }
 }
 
-// Fetch jobs from JSearch (RapidAPI)
+// Fetch jobs from JSearch (RapidAPI) with location filtering
 async function fetchJSearchJobs(query, location = 'United States') {
   try {
+    // Build search query with location
+    const searchQuery = location && location !== 'United States'
+      ? `${query} in ${location}` 
+      : query;
+    
     const url = `${API_CONFIG.jsearch.baseUrl}/search?` +
-      `query=${encodeURIComponent(query + ' in ' + location)}&` +
-      `page=1&num_pages=1`;
+      `query=${encodeURIComponent(searchQuery)}&` +
+      `page=1&num_pages=1&date_posted=all`;
     
     const response = await fetch(url, {
       method: 'GET',
@@ -215,16 +227,36 @@ async function fetchJSearchJobs(query, location = 'United States') {
     
     if (!data.data || data.data.length === 0) return [];
     
-    return data.data.map(job => ({
+    let jobs = data.data;
+    
+    // Apply location filtering if specified
+    if (location && location !== 'United States') {
+      jobs = jobs.filter(job => {
+        const jobCity = (job.job_city || '').toLowerCase();
+        const jobState = (job.job_state || '').toLowerCase();
+        const jobLocation = `${jobCity} ${jobState}`.trim();
+        const searchLocation = location.toLowerCase();
+        const searchParts = searchLocation.split(',').map(s => s.trim());
+        
+        // Check if job location matches any part of search
+        return searchParts.some(part => 
+          jobCity.includes(part) || 
+          jobState.includes(part) || 
+          jobLocation.includes(part)
+        );
+      });
+    }
+    
+    return jobs.map(job => ({
       id: generateId(job.job_title, job.employer_name),
       title: job.job_title,
       company: job.employer_name,
-      location: job.job_city + ', ' + job.job_state,
+      location: `${job.job_city || 'Remote'}, ${job.job_state || 'US'}`,
       description: stripHtml(job.job_description || ''),
       salary_min: job.job_min_salary,
       salary_max: job.job_max_salary,
       contract_type: job.job_employment_type || 'Not specified',
-      created: job.job_posted_at_datetime_utc,
+      created: job.job_posted_at_datetime_utc || new Date().toISOString(),
       redirect_url: job.job_apply_link,
       category: job.job_category || 'General',
       source: 'JSearch',
@@ -236,7 +268,7 @@ async function fetchJSearchJobs(query, location = 'United States') {
   }
 }
 
-// Main search function
+// Main search function with combined results
 async function searchJobs(query, location = '') {
   // Check cache
   const cacheKey = `${query}-${location}`;
@@ -246,15 +278,27 @@ async function searchJobs(query, location = '') {
   
   // Fetch from both APIs
   const [adzunaJobs, jsearchJobs] = await Promise.all([
-    fetchAdzunaJobs(query, 'us'),
+    fetchAdzunaJobs(query, location),
     fetchJSearchJobs(query, location || 'United States')
   ]);
   
   // Combine and deduplicate
   const allJobs = [...adzunaJobs, ...jsearchJobs];
-  const uniqueJobs = Array.from(
+  let uniqueJobs = Array.from(
     new Map(allJobs.map(job => [job.id, job])).values()
   );
+  
+  // Extra safety filter - ensure location match
+  if (location) {
+    uniqueJobs = uniqueJobs.filter(job => {
+      const jobLoc = job.location.toLowerCase();
+      const searchLoc = location.toLowerCase();
+      const searchParts = searchLoc.split(',').map(s => s.trim());
+      
+      // Job must contain at least one part of the search location
+      return searchParts.some(part => jobLoc.includes(part));
+    });
+  }
   
   // Cache results
   state.cache = {
@@ -266,9 +310,7 @@ async function searchJobs(query, location = '') {
   return uniqueJobs;
 }
 
-// ============================================
 // Filter and Sort Functions
-// ============================================
 
 function applyFilters(jobs) {
   let filtered = [...jobs];
@@ -318,9 +360,7 @@ function sortJobs(jobs) {
   }
 }
 
-// ============================================
-// UI Update Functions
-// ============================================
+// UI update function
 
 function updateBookmarkCount() {
   const count = state.bookmarkedJobs.length;
@@ -371,7 +411,7 @@ function showNoResults() {
   elements.errorMessage.style.display = 'none';
 }
 
-// Create job card HTML
+// Job card
 function createJobCard(job) {
   const isBookmarked = state.bookmarkedJobs.some(b => b.id === job.id);
   
@@ -429,14 +469,14 @@ function createJobCard(job) {
     </div>
   `;
   
-  // Add click handler for bookmark button
+  // Handler for bookmark button
   const bookmarkBtn = card.querySelector('.bookmark-btn');
   bookmarkBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     toggleBookmark(job);
   });
   
-  // Add click handler for card
+  // Handler for card
   card.addEventListener('click', () => {
     showJobDetails(job);
   });
@@ -464,9 +504,7 @@ function displayJobs(jobs) {
     `Showing ${jobs.length} job${jobs.length !== 1 ? 's' : ''}`;
 }
 
-// ============================================
-// Bookmark Functions
-// ============================================
+// Bookmark functions
 
 function loadBookmarks() {
   const saved = localStorage.getItem('jobBookmarks');
@@ -524,9 +562,7 @@ function clearAllBookmarks() {
   }
 }
 
-// ============================================
-// Modal Functions
-// ============================================
+// Modal functions
 
 function showJobDetails(job) {
   elements.modalBody.innerHTML = `
@@ -597,7 +633,7 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-// Global function for modal bookmark toggle
+// Function for bookmark toggle
 window.toggleBookmarkFromModal = function(jobId) {
   const job = [...state.jobs, ...state.bookmarkedJobs].find(j => j.id === jobId);
   if (job) {
@@ -607,9 +643,7 @@ window.toggleBookmarkFromModal = function(jobId) {
   }
 };
 
-// ============================================
 // Search and Filter Handlers
-// ============================================
 
 async function handleSearch() {
   const query = elements.jobSearchInput.value.trim();
@@ -649,7 +683,7 @@ async function handleSearch() {
 }
 
 function handleFilterChange() {
-  // Update filter state
+  // Update filter
   state.filters.jobTypes = Array.from(elements.jobTypeFilters)
     .filter(checkbox => checkbox.checked)
     .map(checkbox => checkbox.value);
@@ -657,7 +691,7 @@ function handleFilterChange() {
   state.filters.datePosted = elements.dateFilter.value;
   state.filters.minSalary = elements.salaryFilter.value;
   
-  // Apply filters
+  // Apply filter
   if (state.jobs.length > 0) {
     state.filteredJobs = applyFilters(state.jobs);
     state.filteredJobs = sortJobs(state.filteredJobs);
@@ -668,7 +702,7 @@ function handleFilterChange() {
 }
 
 function clearFilters() {
-  // Reset filter state
+  // Reset filter
   state.filters = {
     jobTypes: [],
     datePosted: '',
@@ -696,9 +730,7 @@ function handleSortChange() {
   displayJobs(state.filteredJobs);
 }
 
-// ============================================
 // Navigation
-// ============================================
 
 function switchView(view) {
   state.currentView = view;
@@ -723,9 +755,7 @@ function switchView(view) {
   }
 }
 
-// ============================================
-// Event Listeners
-// ============================================
+// Event listener
 
 function initEventListeners() {
   // Navigation
@@ -780,9 +810,7 @@ function initEventListeners() {
   });
 }
 
-// ============================================
 // Initialization
-// ============================================
 
 function init() {
   console.log('JobFinder Pro initialized');

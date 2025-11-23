@@ -1,28 +1,28 @@
-# API Keys and Environment Variables
+# API keys and environment variables
 .env
 config.js
 *-key.txt
 
-# Node modules (if you add npm later)
+# Node modules
 node_modules/
 package-lock.json
 
-# OS Files
+# OS 
 .DS_Store
 Thumbs.db
 
-# IDE Files
+# Ide
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# Build Files
+# Build
 dist/
 build/
 *.log
 
-# Temporary Files
+# Temporary files
 temp/
 tmp/
 *.tmp
