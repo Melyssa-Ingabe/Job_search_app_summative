@@ -310,7 +310,7 @@ async function searchJobs(query, location = '') {
   return uniqueJobs;
 }
 
-// Filter and Sort Functions
+// Filter and sort functions
 
 function applyFilters(jobs) {
   let filtered = [...jobs];
